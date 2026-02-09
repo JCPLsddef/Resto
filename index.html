@@ -1,35 +1,33 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aegean Elysium — Cinematic Hero</title>
+  <title>Aegean Elysium — Mediterranean Fine Dining</title>
+  <meta name="description" content="A Mediterranean fine dining experience by the sea. Reserve your table at Aegean Elysium, Santorini.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
   <link rel="preload" as="image" href="images/bg1.png">
   <link rel="preload" as="image" href="images/fg-left.png">
   <link rel="preload" as="image" href="images/fg-right.png">
-  <link rel="preload" as="image" href="images/bg2.png">
-  <link rel="preload" as="image" href="images/bg3.png">
-  <link rel="preload" as="image" href="images/logo.png">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- Loader -->
-  <div class="loader" id="loader">
+  <div class="loader" id="loader" role="status" aria-label="Loading">
     <div class="loader__brand">Aegean Elysium</div>
     <div class="loader__bar"><div class="loader__fill" id="loaderFill"></div></div>
   </div>
 
-  <!-- =============================================
+  <!-- ==========================================
        HERO — Pinned cinematic scroll
-       ============================================= -->
-  <section class="hero-scroll">
+       ========================================== -->
+  <section class="hero-scroll" aria-label="Cinematic hero">
     <div class="stage">
 
       <img class="bg bg1" id="bg1" src="images/bg1.png" alt="" draggable="false">
@@ -47,15 +45,16 @@
       <!-- Cinematic text moments -->
       <p class="cine-text cine-text--1" id="text1">A Mediterranean Experience</p>
       <p class="cine-text cine-text--2" id="text2">Step into the moment</p>
+      <p class="cine-text cine-text--3" id="text3">La table face &agrave; la mer</p>
 
-      <!-- Final brand reveal -->
+      <!-- Brand reveal -->
       <div class="brand-ui" id="brandUI">
         <img class="brand-logo" id="logo" src="images/logo.png" alt="Aegean Elysium">
-        <p class="brand-tagline" id="tagline">La table face à la mer</p>
-        <a class="brand-cta" id="cta" href="#reserve">Réserver</a>
+        <p class="brand-tagline" id="tagline">La table face &agrave; la mer</p>
+        <a class="brand-cta" id="cta" href="#reserve">R&eacute;server</a>
       </div>
 
-      <div class="scroll-hint" id="hint">
+      <div class="scroll-hint" id="hint" aria-hidden="true">
         <span>Scroll</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="1.5"
@@ -67,47 +66,394 @@
     </div>
   </section>
 
-  <!-- Content -->
-  <section id="reserve" class="section-content">
-    <div class="container">
-      <span class="kicker">Réservation</span>
-      <h2 class="section-title">Votre table face à la mer Égée</h2>
-      <p class="section-text">
-        De juin à septembre, chaque soir au coucher du soleil.
-        Cuisine méditerranéenne d'exception, vins grecs de propriétés familiales.
-      </p>
-      <div class="cards">
-        <article class="card">
-          <h3 class="card__title">Meze &amp; Mer</h3>
-          <p class="card__price">75 €</p>
-          <p class="card__desc">Sélection de meze, poisson grillé du jour, dessert aux figues.</p>
-        </article>
-        <article class="card">
-          <h3 class="card__title">Menu Elysium</h3>
-          <p class="card__price">140 €</p>
-          <p class="card__desc">7 services — Le voyage culinaire complet à travers les Cyclades.</p>
-        </article>
-        <article class="card">
-          <h3 class="card__title">Table Privée</h3>
-          <p class="card__price">210 €</p>
-          <p class="card__desc">Votre terrasse privée, vue baie, menu surprise du Chef.</p>
-        </article>
+  <!-- Global grain overlay -->
+  <div class="grain-global" id="grainGlobal" aria-hidden="true"></div>
+
+  <!-- ==========================================
+       MASONRY MOMENTS — Image collage
+       ========================================== -->
+  <section class="s-masonry" id="moments">
+    <div class="s-masonry__inner">
+      <h2 class="section-heading">Moments by the Sea</h2>
+      <p class="section-sub">Light, texture, and quiet celebration — captured in motion.</p>
+      <div class="masonry-list" id="masonryList" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       VALUE STRIP — 4 trust bullets
+       ========================================== -->
+  <section class="s-value" id="value">
+    <div class="s-value__inner">
+      <div class="value-item">
+        <span class="value-item__icon" aria-hidden="true">&#9733;</span>
+        <p class="value-item__text">Chef-led seasonal cuisine</p>
       </div>
-      <div class="cta-wrap">
-        <a href="tel:+30210000000" class="btn-gold">Appeler pour réserver</a>
+      <div class="value-item">
+        <span class="value-item__icon" aria-hidden="true">&#9826;</span>
+        <p class="value-item__text">Sea-facing private terrace</p>
+      </div>
+      <div class="value-item">
+        <span class="value-item__icon" aria-hidden="true">&#10048;</span>
+        <p class="value-item__text">Small evening service</p>
+      </div>
+      <div class="value-item">
+        <span class="value-item__icon" aria-hidden="true">&#9788;</span>
+        <p class="value-item__text">Reservations by request</p>
       </div>
     </div>
   </section>
 
-  <footer class="footer">
-    <div class="container footer__inner">
-      <p>&copy; 2026 Aegean Elysium</p>
-      <p>Coastal Bay, Cyclades, Greece</p>
+  <!-- ==========================================
+       WHY US — 3 cards
+       ========================================== -->
+  <section class="s-why" id="why">
+    <div class="s-why__inner">
+      <h2 class="section-heading">Why Aegean Elysium</h2>
+      <p class="section-sub">Three elements that shape the night.</p>
+      <div class="why-grid">
+        <article class="why-card">
+          <span class="why-card__num">01</span>
+          <h3 class="why-card__title">The Setting</h3>
+          <p class="why-card__text">Perched above the Aegean, every table faces open water. The horizon becomes part of the meal.</p>
+        </article>
+        <article class="why-card">
+          <span class="why-card__num">02</span>
+          <h3 class="why-card__title">The Cuisine</h3>
+          <p class="why-card__text">Daily catch, local harvest, and a restrained hand. Each plate is precise, never loud.</p>
+        </article>
+        <article class="why-card">
+          <span class="why-card__num">03</span>
+          <h3 class="why-card__title">The Moment</h3>
+          <p class="why-card__text">No rush, no performance. Just a quiet pace and a table set for conversation.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       CINEMATIC MENU — Cover reveal
+       ========================================== -->
+  <section class="menu-cinematic" id="menu-cinematic" aria-labelledby="menuCinematicTitle">
+    <div class="menu-cinematic__pin">
+      <div class="menu-cinematic__galaxy" id="menuGalaxy" aria-hidden="true"></div>
+      <div class="menu-cinematic__panel" aria-hidden="true"></div>
+      <div class="menu-cinematic__cover">
+        <img
+          src="https://static.wixstatic.com/media/62f926_1ddef7e498cb4c71b3329cd2fe1dd835~mv2.png"
+          alt="Menu couverture"
+          class="menu-cinematic__cover-img"
+        >
+      </div>
+      <div class="menu-cinematic__content">
+        <div class="menu-cinematic__logo-wrap">
+          <img class="menu-cinematic__logo" src="images/logo.png" alt="Aegean Elysium">
+        </div>
+
+        <header class="menu-cinematic__header">
+          <p class="menu-cinematic__eyebrow">Tasting Menu</p>
+          <h2 class="menu-cinematic__title" id="menuCinematicTitle">The craft of the table, in its purest form</h2>
+          <p class="menu-cinematic__subtitle">Mediterranean plates shaped for a calm, precise service.</p>
+        </header>
+
+        <div class="menu-cinematic__grid">
+          <article class="menu-category">
+            <h3 class="menu-category__title">Starters</h3>
+            <ul class="menu-category__list">
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Carpaccio de bar</h4>
+                  <p class="menu-item__desc">Citrus confit, huile d’olive Koroneiki, fleur de sel</p>
+                </div>
+                <span class="menu-item__price">€24</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Tartare d’agneau fumé</h4>
+                  <p class="menu-item__desc">Yaourt grec, herbes sauvages, pain grillé</p>
+                </div>
+                <span class="menu-item__price">€28</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Courgettes confites</h4>
+                  <p class="menu-item__desc">Menthe fraîche, feta légère, pistache</p>
+                </div>
+                <span class="menu-item__price">€21</span>
+              </li>
+            </ul>
+          </article>
+
+          <article class="menu-category">
+            <h3 class="menu-category__title">Main Courses</h3>
+            <ul class="menu-category__list">
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Loup de mer grillé</h4>
+                  <p class="menu-item__desc">Fenouil braisé, beurre citronné, olives noires</p>
+                </div>
+                <span class="menu-item__price">€42</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Filet de bœuf maturé</h4>
+                  <p class="menu-item__desc">Jus réduit au thym, pommes Anna, cèpes</p>
+                </div>
+                <span class="menu-item__price">€54</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Risotto au safran</h4>
+                  <p class="menu-item__desc">Crustacés, émulsion d’agrumes, basilic</p>
+                </div>
+                <span class="menu-item__price">€38</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Agneau confit 12h</h4>
+                  <p class="menu-item__desc">Aubergine fumée, jus de grenade, sumac</p>
+                </div>
+                <span class="menu-item__price">€46</span>
+              </li>
+            </ul>
+          </article>
+
+          <article class="menu-category">
+            <h3 class="menu-category__title">Desserts</h3>
+            <ul class="menu-category__list">
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Pavlova figue &amp; miel</h4>
+                  <p class="menu-item__desc">Crème légère, noix torréfiées, zeste d’orange</p>
+                </div>
+                <span class="menu-item__price">€18</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Crème brûlée à la fève tonka</h4>
+                  <p class="menu-item__desc">Sucre caramélisé, vanille Bourbon</p>
+                </div>
+                <span class="menu-item__price">€16</span>
+              </li>
+              <li class="menu-item">
+                <div class="menu-item__info">
+                  <h4 class="menu-item__name">Sorbet citron &amp; basilic</h4>
+                  <p class="menu-item__desc">Granité d’agrumes, olive douce</p>
+                </div>
+                <span class="menu-item__price">€14</span>
+              </li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       IMMERSIVE GALLERY
+       ========================================== -->
+  <section class="s-gallery" id="gallery">
+    <div class="s-gallery__header">
+      <h2 class="section-heading">The Evening</h2>
+      <p class="section-sub">A quiet glance into the atmosphere.</p>
+    </div>
+    <div class="gallery-viewport" id="galleryViewport">
+      <div class="gallery-fade gallery-fade--left" aria-hidden="true"></div>
+      <div class="gallery-fade gallery-fade--right" aria-hidden="true"></div>
+      <div class="gallery-track" id="galleryTrack">
+        <div class="gallery-item" data-index="0" tabindex="0" role="button" aria-label="View: Terrace at Golden Hour">
+          <div class="gallery-item__img" style="background-image:url('images/bg1.png');background-position:center 40%"></div>
+          <span class="gallery-item__caption">Terrace at Golden Hour</span>
+        </div>
+        <div class="gallery-item" data-index="1" tabindex="0" role="button" aria-label="View: Mediterranean Plates">
+          <div class="gallery-item__img" style="background-image:url('images/bg2.png');background-position:center center"></div>
+          <span class="gallery-item__caption">Mediterranean Plates</span>
+        </div>
+        <div class="gallery-item" data-index="2" tabindex="0" role="button" aria-label="View: Coastal Panorama">
+          <div class="gallery-item__img" style="background-image:url('images/bg3.png');background-position:center center"></div>
+          <span class="gallery-item__caption">Coastal Panorama</span>
+        </div>
+        <div class="gallery-item" data-index="3" tabindex="0" role="button" aria-label="View: Evening Ambiance">
+          <div class="gallery-item__img" style="background-image:url('images/bg1.png');background-position:left center"></div>
+          <span class="gallery-item__caption">Evening Ambiance</span>
+        </div>
+        <div class="gallery-item" data-index="4" tabindex="0" role="button" aria-label="View: Chef's Table">
+          <div class="gallery-item__img" style="background-image:url('images/bg2.png');background-position:right center"></div>
+          <span class="gallery-item__caption">Chef's Table</span>
+        </div>
+        <div class="gallery-item" data-index="5" tabindex="0" role="button" aria-label="View: The Wine Selection">
+          <div class="gallery-item__img" style="background-image:url('images/bg3.png');background-position:center 30%"></div>
+          <span class="gallery-item__caption">The Wine Selection</span>
+        </div>
+        <div class="gallery-item" data-index="6" tabindex="0" role="button" aria-label="View: Table Setting">
+          <div class="gallery-item__img" style="background-image:url('images/bg1.png');background-position:center 70%"></div>
+          <span class="gallery-item__caption">Table Setting</span>
+        </div>
+        <div class="gallery-item" data-index="7" tabindex="0" role="button" aria-label="View: Seaside Dining">
+          <div class="gallery-item__img" style="background-image:url('images/bg2.png');background-position:center 60%"></div>
+          <span class="gallery-item__caption">Seaside Dining</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Modal -->
+  <div class="gallery-modal" id="galleryModal" role="dialog" aria-modal="true" aria-label="Gallery image" hidden>
+    <div class="gallery-modal__scrim" id="galleryScrim"></div>
+    <img class="gallery-modal__img" id="galleryModalImg" alt="">
+    <button class="gallery-modal__close" id="galleryModalClose" aria-label="Close gallery">&times;</button>
+  </div>
+
+  <!-- ==========================================
+       RESERVATION
+       ========================================== -->
+  <section class="s-reserve" id="reserve">
+    <div class="s-reserve__inner">
+  <h2 class="section-heading">Request a Table</h2>
+  <p class="section-sub">Evenings are limited. We confirm each table with care.</p>
+
+      <form class="reserve-form" id="reserveForm" novalidate>
+        <div class="reserve-form__grid">
+          <div class="form-field">
+            <label for="fname">Name</label>
+            <input type="text" id="fname" name="name" required autocomplete="name" placeholder="Your name">
+          </div>
+          <div class="form-field">
+            <label for="fphone">Phone</label>
+            <input type="tel" id="fphone" name="phone" required autocomplete="tel" placeholder="Phone number">
+          </div>
+          <div class="form-field">
+            <label for="fdate">Date</label>
+            <input type="date" id="fdate" name="date" required>
+          </div>
+          <div class="form-field">
+            <label for="ftime">Time</label>
+            <select id="ftime" name="time" required>
+              <option value="" disabled selected>Select time</option>
+              <option>19:00</option>
+              <option>19:30</option>
+              <option>20:00</option>
+              <option>20:30</option>
+              <option>21:00</option>
+              <option>21:30</option>
+              <option>22:00</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="fguests">Guests</label>
+            <select id="fguests" name="guests" required>
+              <option value="" disabled selected>Select</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8+</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="femail">Email <span class="form-opt">(optional)</span></label>
+            <input type="email" id="femail" name="email" autocomplete="email" placeholder="Email address">
+          </div>
+        </div>
+  <button type="submit" class="reserve-form__btn">Submit request</button>
+      </form>
+
+      <div class="reserve-confirm" id="reserveConfirm" hidden>
+        <div class="reserve-confirm__icon" aria-hidden="true">&#10003;</div>
+  <h3 class="reserve-confirm__title">Request received</h3>
+  <p class="reserve-confirm__text">Thank you. Our team will confirm shortly by phone.</p>
+  <button class="btn-outline" id="reserveAgain" type="button">Make another request</button>
+      </div>
+
+  <p class="s-reserve__trust" id="reserveTrust">Average confirmation time: 30 minutes</p>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       FAQ
+       ========================================== -->
+  <section class="s-faq" id="faq">
+    <div class="s-faq__inner">
+      <h2 class="section-heading">Thoughtful details</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-item__q">What is the average price per person?</summary>
+          <div class="faq-item__a">
+            <p>A full dinner typically ranges from &euro;90 to &euro;140 per person. Our tasting menu is &euro;110, with an optional wine pairing at &euro;55.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__q">Do you accommodate dietary restrictions?</summary>
+          <div class="faq-item__a">
+            <p>Yes. We accommodate vegetarian, vegan, gluten-free, and most allergy requirements. Share any needs when booking.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__q">Can you host private groups or events?</summary>
+          <div class="faq-item__a">
+            <p>Yes. We host private terraces for 8–20 guests and full buyouts for special occasions.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__q">Is there parking available?</summary>
+          <div class="faq-item__a">
+            <p>Complimentary valet parking is available every evening. Boat arrivals can dock at our private pier.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__q">What is your cancellation policy?</summary>
+          <div class="faq-item__a">
+            <p>We request 24 hours’ notice for changes or cancellations. Peak-season late cancellations may incur a &euro;30 fee per guest.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       PREMIUM FOOTER
+       ========================================== -->
+  <footer class="footer" id="footer">
+    <div class="footer__inner">
+      <div class="footer__grid">
+        <div class="footer__col footer__col--brand">
+          <p class="footer__brand">Aegean Elysium</p>
+          <p class="footer__tagline">La table face &agrave; la mer</p>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__heading">Location</h4>
+          <p>Coastal Bay, Oia<br>Santorini 847 02, Greece</p>
+          <a href="https://maps.google.com" class="footer__link" target="_blank" rel="noopener noreferrer">View on map &rarr;</a>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__heading">Hours</h4>
+          <p>June &mdash; September<br>19:00 &mdash; 23:30</p>
+          <p class="footer__note">Closed Mondays</p>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__heading">Contact</h4>
+          <p><a href="tel:+302100000000" class="footer__link">+30 210 000 000</a></p>
+          <p><a href="mailto:hello@aegeanelysium.com" class="footer__link">hello@aegeanelysium.com</a></p>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link" aria-label="Instagram">IG</a>
+            <a href="#" class="footer__social-link" aria-label="Facebook">FB</a>
+            <a href="#" class="footer__social-link" aria-label="TripAdvisor">TA</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <a href="#reserve" class="btn-gold btn-gold--sm">Reserve Your Evening</a>
+        <p class="footer__copy">&copy; 2026 Aegean Elysium. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ogl@0.0.32/dist/ogl.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
