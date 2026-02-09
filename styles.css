@@ -1,0 +1,352 @@
+/* ==============================================
+   CINEMATIC SCROLL SITE — Premium Restaurant
+   Design: Dark / Luxe / Noir & Or
+   Mobile-first, vanilla CSS
+   ============================================== */
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Palette */
+  --color-bg:       #0a0a0a;
+  --color-surface:  #141414;
+  --color-text:     #f5f0eb;
+  --color-muted:    #a89f95;
+  --color-accent:   #c9a96e;
+  --color-accent-hover: #dfc089;
+  --color-glass:    rgba(255, 255, 255, 0.06);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+
+  /* Typography */
+  --font-sans:  'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 6rem;
+
+  /* Scene height — easy to customise */
+  --scene-height: 350vh;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Container --- */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+/* ==============================================
+   SCENE — Cinematic Scroll Section
+   ============================================== */
+#scene {
+  position: relative;
+  height: var(--scene-height);
+  background: var(--color-bg);
+}
+
+/* Canvas — sticky full viewport */
+#c {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: block;
+}
+
+/* Fallback background (if canvas unsupported) */
+.fallback-bg {
+  display: none;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--color-bg) center / cover no-repeat;
+}
+
+.fallback-bg--active {
+  display: block;
+}
+
+/* ==============================================
+   OVERLAY — Premium text on top of canvas
+   ============================================== */
+.overlay {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* On top of canvas but doesn't block scroll */
+  pointer-events: none;
+  z-index: 2;
+  /* Negative margin so overlay sits over the canvas */
+  margin-top: -100vh;
+}
+
+.overlay__content {
+  text-align: center;
+  max-width: 680px;
+  padding: var(--space-md);
+}
+
+/* Kicker */
+.overlay__kicker {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-accent);
+  padding-bottom: 4px;
+}
+
+/* Title */
+.overlay__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Paragraph */
+.overlay__text {
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  color: var(--color-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-md);
+  text-shadow: 0 1px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* CTA Button — Glassmorphism */
+.overlay__cta {
+  display: inline-block;
+  pointer-events: auto; /* Clickable despite overlay pointer-events: none */
+  padding: 0.85rem 2.4rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 50px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.overlay__cta:hover,
+.overlay__cta:focus-visible {
+  background: rgba(201, 169, 110, 0.18);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.overlay__cta:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.overlay__cta:active {
+  transform: translateY(0);
+}
+
+/* Dark variant for non-hero sections */
+.overlay__cta--dark {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+}
+
+.overlay__cta--dark:hover,
+.overlay__cta--dark:focus-visible {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: var(--color-bg);
+}
+
+/* ==============================================
+   RESERVE — Content Section
+   ============================================== */
+.section-reserve {
+  background: var(--color-surface);
+  padding: var(--space-xl) 0;
+}
+
+.section-kicker {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-xs);
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: var(--space-sm);
+}
+
+.section-text {
+  color: var(--color-muted);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: var(--space-lg);
+}
+
+/* --- Menu Cards --- */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.card {
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 16px;
+  padding: var(--space-md);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-4px);
+}
+
+.card__icon {
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  margin-bottom: var(--space-xs);
+}
+
+.card__title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: var(--space-xs);
+}
+
+.card__price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-bottom: var(--space-xs);
+}
+
+.card__desc {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.reserve-cta-wrap {
+  text-align: center;
+}
+
+/* ==============================================
+   FOOTER
+   ============================================== */
+.footer {
+  background: var(--color-bg);
+  padding: var(--space-md) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.footer__address {
+  font-style: normal;
+}
+
+/* ==============================================
+   RESPONSIVE — Tablet+
+   ============================================== */
+@media (min-width: 768px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .footer__inner {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* ==============================================
+   REDUCED MOTION — Accessibility
+   ============================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Canvas will be hidden by JS, fallback shown instead */
+  #c {
+    display: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .overlay__cta:hover {
+    transform: none;
+  }
+}

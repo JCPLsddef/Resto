@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aegean Elysium — Cinematic Hero</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="preload" as="image" href="images/bg1.png">
+  <link rel="preload" as="image" href="images/fg-left.png">
+  <link rel="preload" as="image" href="images/fg-right.png">
+  <link rel="preload" as="image" href="images/bg2.png">
+  <link rel="preload" as="image" href="images/bg3.png">
+  <link rel="preload" as="image" href="images/logo.png">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <div class="loader__brand">Aegean Elysium</div>
+    <div class="loader__bar"><div class="loader__fill" id="loaderFill"></div></div>
+  </div>
+
+  <!-- =============================================
+       HERO — Pinned cinematic scroll
+       ============================================= -->
+  <section class="hero-scroll">
+    <div class="stage">
+
+      <img class="bg bg1" id="bg1" src="images/bg1.png" alt="" draggable="false">
+      <img class="bg bg2" id="bg2" src="images/bg2.png" alt="" draggable="false">
+      <img class="bg bg3" id="bg3" src="images/bg3.png" alt="" draggable="false">
+
+      <img class="fg fg-left"  id="fgLeft"  src="images/fg-left.png"  alt="" draggable="false">
+      <img class="fg fg-right" id="fgRight" src="images/fg-right.png" alt="" draggable="false">
+
+      <div class="vignette" aria-hidden="true"></div>
+      <div class="grad-top" aria-hidden="true"></div>
+      <div class="grad-bottom" aria-hidden="true"></div>
+      <div class="grain" id="grain" aria-hidden="true"></div>
+
+      <!-- Cinematic text moments -->
+      <p class="cine-text cine-text--1" id="text1">A Mediterranean Experience</p>
+      <p class="cine-text cine-text--2" id="text2">Step into the moment</p>
+
+      <!-- Final brand reveal -->
+      <div class="brand-ui" id="brandUI">
+        <img class="brand-logo" id="logo" src="images/logo.png" alt="Aegean Elysium">
+        <p class="brand-tagline" id="tagline">La table face à la mer</p>
+        <a class="brand-cta" id="cta" href="#reserve">Réserver</a>
+      </div>
+
+      <div class="scroll-hint" id="hint">
+        <span>Scroll</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section id="reserve" class="section-content">
+    <div class="container">
+      <span class="kicker">Réservation</span>
+      <h2 class="section-title">Votre table face à la mer Égée</h2>
+      <p class="section-text">
+        De juin à septembre, chaque soir au coucher du soleil.
+        Cuisine méditerranéenne d'exception, vins grecs de propriétés familiales.
+      </p>
+      <div class="cards">
+        <article class="card">
+          <h3 class="card__title">Meze &amp; Mer</h3>
+          <p class="card__price">75 €</p>
+          <p class="card__desc">Sélection de meze, poisson grillé du jour, dessert aux figues.</p>
+        </article>
+        <article class="card">
+          <h3 class="card__title">Menu Elysium</h3>
+          <p class="card__price">140 €</p>
+          <p class="card__desc">7 services — Le voyage culinaire complet à travers les Cyclades.</p>
+        </article>
+        <article class="card">
+          <h3 class="card__title">Table Privée</h3>
+          <p class="card__price">210 €</p>
+          <p class="card__desc">Votre terrasse privée, vue baie, menu surprise du Chef.</p>
+        </article>
+      </div>
+      <div class="cta-wrap">
+        <a href="tel:+30210000000" class="btn-gold">Appeler pour réserver</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>&copy; 2026 Aegean Elysium</p>
+      <p>Coastal Bay, Cyclades, Greece</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
