@@ -63,9 +63,8 @@
     stagger: 0.05,
     animateFrom: 'bottom',
     scaleOnHover: true,
-    hoverScale: 0.95,
-    blurToFocus: true,
-    colorShiftOnHover: false
+    hoverScale: 1.03,
+    blurToFocus: true
   };
 
   var MASONRY_ITEMS = [
@@ -418,7 +417,7 @@
     var sub = section.querySelector('.section-sub');
     var items = [];
 
-    if (section.classList.contains('s-value')) items = section.querySelectorAll('.value-item');
+  if (section.classList.contains('s-value')) items = section.querySelectorAll('.curved-loop');
     if (section.classList.contains('s-why')) items = section.querySelectorAll('.why-card');
     if (section.classList.contains('s-faq')) items = section.querySelectorAll('.faq-item');
 
@@ -455,7 +454,142 @@
   }
 
   /* ================================================
-     6. MASONRY — Reactbits-style animated grid
+     6. CURVED LOOP — marquee text path
+     ================================================ */
+  function initCurvedLoops() {
+    var loops = document.querySelectorAll('.curved-loop');
+    if (!loops.length) return;
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    loops.forEach(function (loop, index) {
+      var svg = loop.querySelector('.curved-loop__svg');
+      var measure = loop.querySelector('.curved-loop__measure');
+      var textPath = loop.querySelector('.curved-loop__textpath');
+      var path = loop.querySelector('.curved-loop__path');
+
+      if (!svg || !measure || !textPath || !path) return;
+
+      var text = loop.getAttribute('data-text') || '';
+      var speed = parseFloat(loop.getAttribute('data-speed')) || 1.2;
+      var curveAmount = parseFloat(loop.getAttribute('data-curve')) || 220;
+      var direction = loop.getAttribute('data-direction') || 'left';
+      var interactive = loop.getAttribute('data-interactive') !== 'false';
+
+      var hasTrailing = /\s|\u00A0$/.test(text);
+      text = (hasTrailing ? text.replace(/\s+$/, '') : text) + '\u00A0';
+
+      var spacing = 0;
+      var offset = 0;
+      var dragActive = false;
+      var lastX = 0;
+      var velocity = 0;
+      var dir = direction;
+
+  var existingId = path.getAttribute('id');
+  var pathId = existingId || ('curvedLoopPath-' + index);
+  path.setAttribute('id', pathId);
+  textPath.setAttribute('href', '#' + pathId);
+
+      function buildPath() {
+        path.setAttribute('d', 'M-100,40 Q500,' + (40 + curveAmount) + ' 1540,40');
+      }
+
+      function buildText() {
+        measure.textContent = text;
+        spacing = measure.getComputedTextLength();
+        if (!spacing) return;
+
+        var repeats = Math.ceil(1800 / spacing) + 2;
+        var totalText = new Array(repeats).fill(text).join('');
+        textPath.textContent = totalText;
+        offset = -spacing;
+        textPath.setAttribute('startOffset', offset + 'px');
+        loop.style.visibility = 'visible';
+      }
+
+      buildPath();
+      buildText();
+
+      if (reduceMotion) {
+        textPath.setAttribute('startOffset', '0px');
+        loop.style.visibility = 'visible';
+        return;
+      }
+
+      var frame = 0;
+      var step = function () {
+        if (!dragActive) {
+          var delta = dir === 'right' ? speed : -speed;
+          var currentOffset = parseFloat(textPath.getAttribute('startOffset') || '0');
+          var newOffset = currentOffset + delta;
+          var wrapPoint = spacing;
+
+          if (wrapPoint) {
+            if (newOffset <= -wrapPoint) newOffset += wrapPoint;
+            if (newOffset > 0) newOffset -= wrapPoint;
+          }
+
+          textPath.setAttribute('startOffset', newOffset + 'px');
+          offset = newOffset;
+        }
+        frame = requestAnimationFrame(step);
+      };
+
+      frame = requestAnimationFrame(step);
+
+      window.addEventListener('resize', function () {
+        buildPath();
+        buildText();
+      });
+
+      if (!interactive) {
+        loop.style.cursor = 'auto';
+        return;
+      }
+
+      loop.addEventListener('pointerdown', function (e) {
+        dragActive = true;
+        loop.classList.add('is-dragging');
+        lastX = e.clientX;
+        velocity = 0;
+        loop.setPointerCapture(e.pointerId);
+      });
+
+      loop.addEventListener('pointermove', function (e) {
+        if (!dragActive) return;
+        var dx = e.clientX - lastX;
+        lastX = e.clientX;
+        velocity = dx;
+
+        var currentOffset = parseFloat(textPath.getAttribute('startOffset') || '0');
+        var newOffset = currentOffset + dx;
+        var wrapPoint = spacing;
+
+        if (wrapPoint) {
+          if (newOffset <= -wrapPoint) newOffset += wrapPoint;
+          if (newOffset > 0) newOffset -= wrapPoint;
+        }
+
+        textPath.setAttribute('startOffset', newOffset + 'px');
+        offset = newOffset;
+      });
+
+      function endDrag() {
+        if (!dragActive) return;
+        dragActive = false;
+        loop.classList.remove('is-dragging');
+        dir = velocity > 0 ? 'right' : 'left';
+      }
+
+      loop.addEventListener('pointerup', endDrag);
+      loop.addEventListener('pointerleave', endDrag);
+      loop.addEventListener('pointercancel', endDrag);
+    });
+  }
+
+  /* ================================================
+     7. MASONRY — Reactbits-style animated grid
      ================================================ */
   function initMasonry() {
     var container = document.getElementById('masonryList');
@@ -523,26 +657,12 @@
           ease: 'power2.out'
         });
       }
-
-      if (MASONRY_OPTIONS.colorShiftOnHover) {
-        var overlay = element.querySelector('.color-overlay');
-        if (overlay) {
-          gsap.to(overlay, { opacity: 0.3, duration: 0.3 });
-        }
-      }
     }
 
     function handleMouseLeave(e) {
       var element = e.currentTarget;
       if (MASONRY_OPTIONS.scaleOnHover) {
         gsap.to(element, { scale: 1, duration: 0.3, ease: 'power2.out' });
-      }
-
-      if (MASONRY_OPTIONS.colorShiftOnHover) {
-        var overlay = element.querySelector('.color-overlay');
-        if (overlay) {
-          gsap.to(overlay, { opacity: 0, duration: 0.3 });
-        }
       }
     }
 
@@ -557,12 +677,6 @@
       var img = document.createElement('div');
       img.className = 'item-img';
       img.style.backgroundImage = "url('" + item.img + "')";
-
-      if (MASONRY_OPTIONS.colorShiftOnHover) {
-        var overlay = document.createElement('div');
-        overlay.className = 'color-overlay';
-        img.appendChild(overlay);
-      }
 
       wrapper.appendChild(img);
       container.appendChild(wrapper);
@@ -686,7 +800,7 @@
       gsap.set(panel, { opacity: 0, scale: 0.98 });
     }
     if (galaxy) {
-      gsap.set(galaxy, { opacity: 0.35 });
+      gsap.set(galaxy, { opacity: 1 });
     }
 
     var tl = gsap.timeline({
@@ -711,7 +825,7 @@
     }
 
     if (galaxy) {
-      tl.to(galaxy, { opacity: 0.1, duration: 0.35, ease: 'power2.out' }, 0.43);
+      tl.to(galaxy, { opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.43);
     }
     if (panel) {
       tl.to(panel, { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out' }, 0.53);
@@ -741,236 +855,222 @@
   }
 
   /* ================================================
-     8. MENU GALAXY — OGL shader background
+     8. MENU LIGHT RAYS — WebGL shader background
      ================================================ */
   function initMenuGalaxy() {
     var container = document.getElementById('menuGalaxy');
-    if (!container || !window.OGL) return;
+    if (!container) return;
 
-    var OGL = window.OGL;
-  var renderer = new OGL.Renderer({ alpha: true, premultipliedAlpha: false });
-    var gl = renderer.gl;
+    var canvas = document.createElement('canvas');
+    var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!gl) return;
 
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(0, 0, 0, 1);
 
-    var vertex = [
-      'attribute vec2 uv;',
+    var vertexSrc = [
       'attribute vec2 position;',
       'varying vec2 vUv;',
       'void main() {',
-      '  vUv = uv;',
-      '  gl_Position = vec4(position, 0, 1);',
+      '  vUv = position * 0.5 + 0.5;',
+      '  gl_Position = vec4(position, 0.0, 1.0);',
       '}'
     ].join('\n');
 
-    var fragment = [
+    var fragmentSrc = [
       'precision highp float;',
-      'uniform float uTime;',
-      'uniform vec3 uResolution;',
-      'uniform vec2 uFocal;',
-      'uniform vec2 uRotation;',
-      'uniform float uStarSpeed;',
-      'uniform float uDensity;',
-      'uniform float uHueShift;',
-      'uniform float uSpeed;',
-      'uniform vec2 uMouse;',
-      'uniform float uGlowIntensity;',
-      'uniform float uSaturation;',
-      'uniform bool uMouseRepulsion;',
-      'uniform float uTwinkleIntensity;',
-      'uniform float uRotationSpeed;',
-      'uniform float uRepulsionStrength;',
-      'uniform float uMouseActiveFactor;',
-      'uniform float uAutoCenterRepulsion;',
-      'uniform bool uTransparent;',
+      '',
+      'uniform float iTime;',
+      'uniform vec2  iResolution;',
+      'uniform vec2  rayPos;',
+      'uniform vec2  rayDir;',
+      'uniform vec3  raysColor;',
+      'uniform float raysSpeed;',
+      'uniform float lightSpread;',
+      'uniform float rayLength;',
+      'uniform float pulsating;',
+      'uniform float fadeDistance;',
+      'uniform float saturation;',
+      'uniform vec2  mousePos;',
+      'uniform float mouseInfluence;',
+      'uniform float noiseAmount;',
+      'uniform float distortion;',
+      '',
       'varying vec2 vUv;',
-      '#define NUM_LAYER 4.0',
-      '#define STAR_COLOR_CUTOFF 0.2',
-      '#define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)',
-      '#define PERIOD 3.0',
-      'float Hash21(vec2 p) {',
-      '  p = fract(p * vec2(123.34, 456.21));',
-      '  p += dot(p, p + 45.32);',
-      '  return fract(p.x * p.y);',
+      '',
+      'float noise(vec2 st) {',
+      '  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);',
       '}',
-      'float tri(float x) { return abs(fract(x) * 2.0 - 1.0); }',
-      'float tris(float x) {',
-      '  float t = fract(x);',
-      '  return 1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0));',
+      '',
+      'float rayStrength(vec2 raySource, vec2 rayRefDirection, vec2 coord,',
+      '                  float seedA, float seedB, float speed) {',
+      '  vec2 sourceToCoord = coord - raySource;',
+      '  vec2 dirNorm = normalize(sourceToCoord);',
+      '  float cosAngle = dot(dirNorm, rayRefDirection);',
+      '',
+      '  float distortedAngle = cosAngle + distortion * sin(iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;',
+      '',
+      '  float spreadFactor = pow(max(distortedAngle, 0.0), 1.0 / max(lightSpread, 0.001));',
+      '',
+      '  float distance = length(sourceToCoord);',
+      '  float maxDistance = iResolution.x * rayLength;',
+      '  float lengthFalloff = clamp((maxDistance - distance) / maxDistance, 0.0, 1.0);',
+      '',
+      '  float fadeFalloff = clamp((iResolution.x * fadeDistance - distance) / (iResolution.x * fadeDistance), 0.5, 1.0);',
+      '  float pulse = pulsating > 0.5 ? (0.8 + 0.2 * sin(iTime * speed * 3.0)) : 1.0;',
+      '',
+      '  float baseStrength = clamp(',
+      '    (0.45 + 0.15 * sin(distortedAngle * seedA + iTime * speed)) +',
+      '    (0.3 + 0.2 * cos(-distortedAngle * seedB + iTime * speed)),',
+      '    0.0, 1.0',
+      '  );',
+      '',
+      '  return baseStrength * lengthFalloff * fadeFalloff * spreadFactor * pulse;',
       '}',
-      'float trisn(float x) {',
-      '  float t = fract(x);',
-      '  return 2.0 * (1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0))) - 1.0;',
-      '}',
-      'vec3 hsv2rgb(vec3 c) {',
-      '  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);',
-      '  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);',
-      '  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);',
-      '}',
-      'float Star(vec2 uv, float flare) {',
-      '  float d = length(uv);',
-      '  float m = (0.05 * uGlowIntensity) / d;',
-      '  float rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));',
-      '  m += rays * flare * uGlowIntensity;',
-      '  uv *= MAT45;',
-      '  rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));',
-      '  m += rays * 0.3 * flare * uGlowIntensity;',
-      '  m *= smoothstep(1.0, 0.2, d);',
-      '  return m;',
-      '}',
-      'vec3 StarLayer(vec2 uv) {',
-      '  vec3 col = vec3(0.0);',
-      '  vec2 gv = fract(uv) - 0.5;',
-      '  vec2 id = floor(uv);',
-      '  for (int y = -1; y <= 1; y++) {',
-      '    for (int x = -1; x <= 1; x++) {',
-      '      vec2 offset = vec2(float(x), float(y));',
-      '      vec2 si = id + vec2(float(x), float(y));',
-      '      float seed = Hash21(si);',
-      '      float size = fract(seed * 345.32);',
-      '      float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));',
-      '      float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;',
-      '      float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;',
-      '      float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;',
-      '      float grn = min(red, blu) * seed;',
-      '      vec3 base = vec3(red, grn, blu);',
-      '      float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;',
-      '      hue = fract(hue + uHueShift / 360.0);',
-      '      float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;',
-      '      float val = max(max(base.r, base.g), base.b);',
-      '      base = hsv2rgb(vec3(hue, sat, val));',
-      '      vec2 pad = vec2(tris(seed * 34.0 + uTime * uSpeed / 10.0), tris(seed * 38.0 + uTime * uSpeed / 30.0)) - 0.5;',
-      '      float star = Star(gv - offset - pad, flareSize);',
-      '      vec3 color = base;',
-      '      float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;',
-      '      twinkle = mix(1.0, twinkle, uTwinkleIntensity);',
-      '      star *= twinkle;',
-      '      col += star * size * color;',
-      '    }',
-      '  }',
-      '  return col;',
-      '}',
+      '',
       'void main() {',
-      '  vec2 focalPx = uFocal * uResolution.xy;',
-      '  vec2 uv = (vUv * uResolution.xy - focalPx) / uResolution.y;',
-      '  vec2 mouseNorm = uMouse - vec2(0.5);',
-      '  if (uAutoCenterRepulsion > 0.0) {',
-      '    vec2 centerUV = vec2(0.0, 0.0);',
-      '    float centerDist = length(uv - centerUV);',
-      '    vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));',
-      '    uv += repulsion * 0.05;',
-      '  } else if (uMouseRepulsion) {',
-      '    vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;',
-      '    float mouseDist = length(uv - mousePosUV);',
-      '    vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));',
-      '    uv += repulsion * 0.05 * uMouseActiveFactor;',
-      '  } else {',
-      '    vec2 mouseOffset = mouseNorm * 0.1 * uMouseActiveFactor;',
-      '    uv += mouseOffset;',
+      '  vec2 coord = vec2(gl_FragCoord.x, iResolution.y - gl_FragCoord.y);',
+      '',
+      '  vec2 finalRayDir = rayDir;',
+      '  if (mouseInfluence > 0.0) {',
+      '    vec2 mouseScreenPos = mousePos * iResolution.xy;',
+      '    vec2 mouseDirection = normalize(mouseScreenPos - rayPos);',
+      '    finalRayDir = normalize(mix(rayDir, mouseDirection, mouseInfluence));',
       '  }',
-      '  float autoRotAngle = uTime * uRotationSpeed;',
-      '  mat2 autoRot = mat2(cos(autoRotAngle), -sin(autoRotAngle), sin(autoRotAngle), cos(autoRotAngle));',
-      '  uv = autoRot * uv;',
-      '  uv = mat2(uRotation.x, -uRotation.y, uRotation.y, uRotation.x) * uv;',
-      '  vec3 col = vec3(0.0);',
-      '  for (float i = 0.0; i < 1.0; i += 1.0 / NUM_LAYER) {',
-      '    float depth = fract(i + uStarSpeed * uSpeed);',
-      '    float scale = mix(20.0 * uDensity, 0.5 * uDensity, depth);',
-      '    float fade = depth * smoothstep(1.0, 0.9, depth);',
-      '    col += StarLayer(uv * scale + i * 453.32) * fade;',
+      '',
+      '  vec4 rays1 = vec4(1.0) *',
+      '               rayStrength(rayPos, finalRayDir, coord, 36.2214, 21.11349,',
+      '                           1.5 * raysSpeed);',
+      '  vec4 rays2 = vec4(1.0) *',
+      '               rayStrength(rayPos, finalRayDir, coord, 22.3991, 18.0234,',
+      '                           1.1 * raysSpeed);',
+      '',
+      '  vec4 fragColor = rays1 * 0.5 + rays2 * 0.4;',
+      '',
+      '  if (noiseAmount > 0.0) {',
+      '    float n = noise(coord * 0.01 + iTime * 0.1);',
+      '    fragColor.rgb *= (1.0 - noiseAmount + noiseAmount * n);',
       '  }',
-      '  if (uTransparent) {',
-      '    float alpha = length(col);',
-      '    alpha = smoothstep(0.0, 0.3, alpha);',
-      '    alpha = min(alpha, 1.0);',
-      '    gl_FragColor = vec4(col, alpha);',
-      '  } else {',
-      '    gl_FragColor = vec4(col, 1.0);',
+      '',
+      '  float brightness = 1.0 - (coord.y / iResolution.y);',
+      '  fragColor.x *= 0.1 + brightness * 0.8;',
+      '  fragColor.y *= 0.3 + brightness * 0.6;',
+      '  fragColor.z *= 0.5 + brightness * 0.5;',
+      '',
+      '  if (saturation != 1.0) {',
+      '    float gray = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));',
+      '    fragColor.rgb = mix(vec3(gray), fragColor.rgb, saturation);',
       '  }',
+      '',
+      '  fragColor.rgb *= raysColor;',
+      '',
+      '  gl_FragColor = fragColor;',
       '}'
     ].join('\n');
 
-  var baseStarSpeed = 0.6;
-  var baseSpeed = 1.0;
-
-  var geometry = new OGL.Triangle(gl);
-  var program = new OGL.Program(gl, {
-      vertex: vertex,
-      fragment: fragment,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: { value: new OGL.Color(1, 1, 1) },
-        uFocal: { value: new Float32Array([0.5, 0.5]) },
-        uRotation: { value: new Float32Array([1.0, 0.0]) },
-  uStarSpeed: { value: baseStarSpeed },
-  uDensity: { value: 1.2 },
-  uHueShift: { value: 210 },
-  uSpeed: { value: baseSpeed },
-        uMouse: { value: new Float32Array([0.5, 0.5]) },
-  uGlowIntensity: { value: 0.55 },
-  uSaturation: { value: 0.25 },
-        uMouseRepulsion: { value: true },
-  uTwinkleIntensity: { value: 0.4 },
-        uRotationSpeed: { value: 0.1 },
-        uRepulsionStrength: { value: 2.0 },
-        uMouseActiveFactor: { value: 0.0 },
-        uAutoCenterRepulsion: { value: 0.0 },
-  uTransparent: { value: false }
+    function compileShader(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error('LightRays shader error:', gl.getShaderInfoLog(s));
+        return null;
       }
-    });
+      return s;
+    }
 
-    var mesh = new OGL.Mesh(gl, { geometry: geometry, program: program });
+    var vs = compileShader(gl.VERTEX_SHADER, vertexSrc);
+    var fs = compileShader(gl.FRAGMENT_SHADER, fragmentSrc);
+    if (!vs || !fs) return;
+
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error('LightRays program link error:', gl.getProgramInfoLog(prog));
+      return;
+    }
+    gl.useProgram(prog);
+
+    // Full-screen triangle
+    var verts = new Float32Array([-1, -1, 3, -1, -1, 3]);
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+
+    var posLoc = gl.getAttribLocation(prog, 'position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    // Uniform locations
+    var loc = {
+      iTime: gl.getUniformLocation(prog, 'iTime'),
+      iResolution: gl.getUniformLocation(prog, 'iResolution'),
+      rayPos: gl.getUniformLocation(prog, 'rayPos'),
+      rayDir: gl.getUniformLocation(prog, 'rayDir'),
+      raysColor: gl.getUniformLocation(prog, 'raysColor'),
+      raysSpeed: gl.getUniformLocation(prog, 'raysSpeed'),
+      lightSpread: gl.getUniformLocation(prog, 'lightSpread'),
+      rayLength: gl.getUniformLocation(prog, 'rayLength'),
+      pulsating: gl.getUniformLocation(prog, 'pulsating'),
+      fadeDistance: gl.getUniformLocation(prog, 'fadeDistance'),
+      saturation: gl.getUniformLocation(prog, 'saturation'),
+      mousePos: gl.getUniformLocation(prog, 'mousePos'),
+      mouseInfluence: gl.getUniformLocation(prog, 'mouseInfluence'),
+      noiseAmount: gl.getUniformLocation(prog, 'noiseAmount'),
+      distortion: gl.getUniformLocation(prog, 'distortion')
+    };
+
+    // Set static uniforms
+    gl.uniform3f(loc.raysColor, 1.0, 1.0, 1.0);
+    gl.uniform1f(loc.raysSpeed, 1.0);
+    gl.uniform1f(loc.lightSpread, 1.0);
+    gl.uniform1f(loc.rayLength, 2.0);
+    gl.uniform1f(loc.pulsating, 0.0);
+    gl.uniform1f(loc.fadeDistance, 1.0);
+    gl.uniform1f(loc.saturation, 1.0);
+    gl.uniform1f(loc.mouseInfluence, 0.1);
+    gl.uniform1f(loc.noiseAmount, 0.0);
+    gl.uniform1f(loc.distortion, 0.0);
+
     var rafId;
-    var targetMouse = { x: 0.5, y: 0.5 };
     var smoothMouse = { x: 0.5, y: 0.5 };
-    var targetActive = 0.0;
-    var smoothActive = 0.0;
+    var targetMouse = { x: 0.5, y: 0.5 };
 
     function resize() {
-      var scale = 1;
-      renderer.setSize(container.offsetWidth * scale, container.offsetHeight * scale);
-      program.uniforms.uResolution.value = new OGL.Color(
-        gl.canvas.width,
-        gl.canvas.height,
-        gl.canvas.width / gl.canvas.height
-      );
+      canvas.width = container.offsetWidth;
+      canvas.height = container.offsetHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(loc.iResolution, canvas.width, canvas.height);
+      // top-center origin: anchor above center, direction pointing down
+      var outside = 0.2;
+      gl.uniform2f(loc.rayPos, 0.5 * canvas.width, -outside * canvas.height);
+      gl.uniform2f(loc.rayDir, 0.0, 1.0);
     }
 
     function update(t) {
       rafId = requestAnimationFrame(update);
-  program.uniforms.uTime.value = t * 0.001;
-  program.uniforms.uStarSpeed.value = (t * 0.001 * baseStarSpeed) / 10.0;
+      gl.uniform1f(loc.iTime, t * 0.001);
 
-      smoothMouse.x += (targetMouse.x - smoothMouse.x) * 0.05;
-      smoothMouse.y += (targetMouse.y - smoothMouse.y) * 0.05;
-      smoothActive += (targetActive - smoothActive) * 0.05;
+      smoothMouse.x += (targetMouse.x - smoothMouse.x) * 0.08;
+      smoothMouse.y += (targetMouse.y - smoothMouse.y) * 0.08;
+      gl.uniform2f(loc.mousePos, smoothMouse.x, smoothMouse.y);
 
-      program.uniforms.uMouse.value[0] = smoothMouse.x;
-      program.uniforms.uMouse.value[1] = smoothMouse.y;
-      program.uniforms.uMouseActiveFactor.value = smoothActive;
-
-      renderer.render({ scene: mesh });
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
     function handleMouseMove(e) {
       var rect = container.getBoundingClientRect();
       targetMouse.x = (e.clientX - rect.left) / rect.width;
-      targetMouse.y = 1.0 - (e.clientY - rect.top) / rect.height;
-      targetActive = 1.0;
-    }
-
-    function handleMouseLeave() {
-      targetActive = 0.0;
+      targetMouse.y = (e.clientY - rect.top) / rect.height;
     }
 
     window.addEventListener('resize', resize, false);
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    window.addEventListener('mousemove', handleMouseMove);
 
     resize();
-    container.appendChild(gl.canvas);
+    container.appendChild(canvas);
     rafId = requestAnimationFrame(update);
   }
 
@@ -1197,6 +1297,7 @@
     items.forEach(function (item) {
       var summary = item.querySelector('summary');
       var content = item.querySelector('.faq-item__a');
+      var chevron = item.querySelector('.faq-item__chevron');
       if (!summary || !content) return;
 
       gsap.set(content, { height: 0, opacity: 0, overflow: 'hidden' });
@@ -1206,6 +1307,7 @@
         var isOpen = item.hasAttribute('open');
 
         if (isOpen) {
+          if (chevron) gsap.to(chevron, { rotation: 0, duration: 0.4, ease: 'power3.out' });
           gsap.to(content, {
             height: 0,
             opacity: 0,
@@ -1217,6 +1319,7 @@
           });
         } else {
           item.setAttribute('open', '');
+          if (chevron) gsap.to(chevron, { rotation: 180, duration: 0.4, ease: 'power3.out' });
           var targetHeight = content.scrollHeight;
           gsap.fromTo(content,
             { height: 0, opacity: 0 },
@@ -1236,7 +1339,7 @@
   }
 
   /* ================================================
-     7. RESERVATION FORM — validation + confirmation
+    8. RESERVATION FORM — validation + confirmation
      ================================================ */
   function initForm() {
     var form = document.getElementById('reserveForm');
@@ -1259,6 +1362,7 @@
       // Clear prior validation states
       form.querySelectorAll('.is-invalid').forEach(function (el) {
         el.classList.remove('is-invalid');
+        el.removeAttribute('aria-invalid');
       });
 
       // Validate required fields
@@ -1267,9 +1371,32 @@
       required.forEach(function (field) {
         if (!field.value || !field.value.trim()) {
           field.classList.add('is-invalid');
+          field.setAttribute('aria-invalid', 'true');
           valid = false;
         }
       });
+
+      // Validate phone format (at least 6 digits)
+      var phoneField = document.getElementById('fphone');
+      if (phoneField && phoneField.value.trim()) {
+        var digits = phoneField.value.replace(/\D/g, '');
+        if (digits.length < 6) {
+          phoneField.classList.add('is-invalid');
+          phoneField.setAttribute('aria-invalid', 'true');
+          valid = false;
+        }
+      }
+
+      // Validate email format if provided
+      var emailField = document.getElementById('femail');
+      if (emailField && emailField.value.trim()) {
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailField.value.trim())) {
+          emailField.classList.add('is-invalid');
+          emailField.setAttribute('aria-invalid', 'true');
+          valid = false;
+        }
+      }
 
       if (!valid) {
         // Focus first invalid field
@@ -1300,7 +1427,7 @@
 
 
   /* ================================================
-     8. BOOT SEQUENCE
+    9. BOOT SEQUENCE
      ================================================ */
   function boot() {
     makeGrain();
@@ -1315,13 +1442,14 @@
     ]).then(function () {
       setTimeout(function () {
         if (loader) loader.classList.add('loader--hidden');
-        initHero();
-  initMasonry();
-  initCinematicMenu();
-  initMenuGalaxy();
+    initHero();
+    initCurvedLoops();
+    initMasonry();
+    initCinematicMenu();
+    initMenuGalaxy();
         initReveals();
         initGallery();
-  initFaq();
+    initFaq();
         initForm();
       }, 350);
     });
